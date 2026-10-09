@@ -1,4 +1,4 @@
-% ============================================================
+﻿% ============================================================
 % ARIA-ICNABS Project - Paper v20 (FCAA revision + 5 FCAA refs with DOIs)
 % A Diagnostic Framework for Detecting False Fractionalization
 % in Physics-Informed Neural Networks
@@ -410,7 +410,7 @@ and the fractional derivative is approximated by
 This scheme is the ABC-L1 scheme of Alsaadi et al.~\cite{Alsaadi2026} in one spatial dimension. We use \(N_x=100\), \(N_t=200\) for the ABC reference, with weights precomputed once and cached.
 
 \paragraph{On the numerical cost of the Mittag-Leffler kernel.}
-The quadrature approach of \eqref{eq:abc_weights} is numerically straightforward but computationally expensive: each weight \(\omega_{n,k}\) requires a numerical evaluation of the Mittag-Leffler function over the sub-interval \([t_k,t_{k+1}]\), and the total cost scales as \(O(N_t^2)\) quadrature evaluations. This cost contributes substantially to the \(13.8\times\) training-time penalty observed in Table~\ref{tab:main}. We emphasize that this overhead is an artifact of the naive quadrature implementation and not an intrinsic cost of non-locality: modern algorithms for the numerical evaluation of \(E_\alpha\) (e.g., the Pad\'e-based approach of Gorenflo et al.~\cite{Gorenflo2020} or the recursive ML algorithms of Garrappa~\cite{Garrappa2020}) can reduce the per-weight cost to \(O(1)\). We use the simple quadrature here for transparency and reproducibility; replacing it with an optimized ML evaluation would reduce, but not eliminate, the observed cost gap between ABC-L1 and the local baseline.
+The quadrature approach of \eqref{eq:abc_weights} is numerically straightforward but computationally expensive: each weight \(\omega_{n,k}\) requires a numerical evaluation of the Mittag-Leffler function over the sub-interval \([t_k,t_{k+1}]\), and the total cost scales as \(O(N_t^2)\) quadrature evaluations. This cost contributes substantially to the \(13.8\times\) training-time penalty observed in Table~\ref{tab:main}. We emphasize that this overhead is an artifact of the naive quadrature implementation and not an intrinsic cost of non-locality: modern algorithms for the numerical evaluation of \(E_\alpha\) (e.g., the Pad\'e-based approach of Gorenflo et al.~\cite{Gorenflo2020}, the recursive ML algorithms of Garrappa~\cite{Garrappa2020}, or recent analytic results on series representations of the Mittag-Leffler function~\cite{Deif2024}) can reduce the per-weight cost to \(O(1)\). We use the simple quadrature here for transparency and reproducibility; replacing it with an optimized ML evaluation would reduce, but not eliminate, the observed cost gap between ABC-L1 and the local baseline.
 
 \begin{figure}[htbp]
 \centering
