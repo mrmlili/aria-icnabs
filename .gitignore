@@ -1,0 +1,10 @@
+﻿__pycache__/
+*.py[cod]
+*.pth
+*.pt
+*.aux
+*.log
+*.out
+*.synctex.gz
+.DS_Store
+Thumbs.db
