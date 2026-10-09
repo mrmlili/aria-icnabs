@@ -1,5 +1,5 @@
 % ============================================================
-% ARIA-ICNABS Project - Paper v18 (with Zenodo DOI)
+% ARIA-ICNABS Project - Paper v20 (FCAA revision + 5 FCAA refs with DOIs)
 % A Diagnostic Framework for Detecting False Fractionalization
 % in Physics-Informed Neural Networks
 % Compile: pdflatex (2 runs for references)
@@ -39,7 +39,7 @@
 % ============================================================
 \begin{abstract}
 \noindent
-Physics-informed neural networks (PINNs) are increasingly deployed for fractional partial differential equations, yet the field lacks a systematic method to verify that a chosen residual discretization genuinely preserves the non-local memory of the underlying fractional operator. We report a case study on the Atangana--Baleanu--Caputo (ABC) derivative in a one-dimensional advection--dispersion equation, in which a widely used two-point finite-difference surrogate silently reduces to a rescaled classical PDE in the limit \(\Delta t \to 0\). We develop a three-test diagnostic protocol---\emph{kernel-presence}, \emph{\(\Delta t\)-refinement}, and \emph{effective-time}---which together detect this failure mode without requiring access to the underlying solver. Applying the protocol to three discretizations of the same PDE---(i) a naive two-point FD, (ii) a Caputo-type L1 scheme with power-law kernel, and (iii) a fully ABC-consistent L1 scheme with the Mittag-Leffler kernel---we provide, to our knowledge, the first controlled three-way comparison guided by an explicit diagnostic protocol, of the accuracy and computational cost of genuine non-locality in a PINN. Across three random seeds, the naive FD residual achieves \(\mathrm{MSE} = 3.04 \times 10^{-6} \pm 1.42 \times 10^{-6}\) in \(216\)\,s of training; the Caputo-L1 residual gives \(6.19 \times 10^{-6} \pm 0.72 \times 10^{-6}\) in \(2327\)\,s; and the ABC-L1 residual with genuine Mittag-Leffler kernel gives \(4.19 \times 10^{-5} \pm 9.17 \times 10^{-6}\) in \(2968\)\,s. The price of non-locality is therefore a factor of \(2.0\times\) (Caputo) to \(13.8\times\) (ABC) in MSE, at \(10.8\times\)--\(13.8\times\) the training cost of the local baseline. We additionally show that the diagnostic protocol classifies the naive FD residual as a false fractionalization, the Caputo-L1 residual as genuine but power-law, and the ABC-L1 residual as genuine and nonsingular. We release all code and data as a reproducible benchmark for future fPINN work.
+Physics-informed neural networks (PINNs) are increasingly deployed for fractional partial differential equations, yet the field lacks a systematic method to verify that a chosen residual discretization genuinely preserves the non-local memory of the underlying fractional operator. We report a case study on the Atangana--Baleanu--Caputo (ABC) derivative in a one-dimensional advection--dispersion equation, in which a widely used two-point finite-difference surrogate silently reduces to a rescaled classical PDE in the limit \(\Delta t \to 0\). We develop a three-test diagnostic protocol---\emph{kernel-presence}, \emph{\(\Delta t\)-refinement}, and \emph{effective-time}---which together detect this failure mode without requiring access to the underlying solver. Applying the protocol to three discretizations of the same PDE---(i) a naive two-point FD, (ii) a Caputo-type L1 scheme with power-law kernel, and (iii) a fully ABC-consistent L1 scheme with the Mittag-Leffler kernel---we provide, to our knowledge, the first controlled three-way comparison guided by an explicit diagnostic protocol, of the accuracy and computational cost of genuine non-locality in a PINN. Across three random seeds, the naive FD residual achieves \(\mathrm{MSE} = 3.04 \times 10^{-6} \pm 1.42 \times 10^{-6}\) in \(216\)\,s of training; the Caputo-L1 residual gives \(6.19 \times 10^{-6} \pm 0.72 \times 10^{-6}\) in \(2327\)\,s; and the ABC-L1 residual with genuine Mittag-Leffler kernel gives \(4.19 \times 10^{-5} \pm 9.17 \times 10^{-6}\) in \(2968\)\,s. The price of non-locality is therefore a factor of \(2.0\times\) (Caputo) to \(13.8\times\) (ABC) in MSE, at \(10.8\times\)--\(13.8\times\) the training cost of the local baseline. We additionally show that the diagnostic protocol classifies the naive FD residual as a false fractionalization, the Caputo-L1 residual as genuine but power-law, and the ABC-L1 residual as genuine and nonsingular. At a second fractional order \(\alpha = 0.5\), preliminary experiments suggest that the ranking of residuals may change, although with three random seeds the difference between the naive-FD and Caputo-L1 residuals is borderline and we report this as an observation rather than a claim. We release all code and data as a reproducible benchmark for future fPINN work.
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} Physics-Informed Neural Networks; Atangana--Baleanu Derivative; Fractional Advection-Dispersion; Diagnostic Protocol; Non-local Operators; Reproducible Benchmark
@@ -55,7 +55,7 @@ Physics-informed neural networks (PINNs) are increasingly deployed for fractiona
 
 The extension of physics-informed neural networks (PINNs) \cite{Raissi2019} to fractional differential equations has produced a rapidly growing literature in which fractional operators are used to model anomalous transport, viscoelasticity, and sub-diffusion \cite{Pang2019, Toan2025}. The appeal of this line of work is clear: fractional operators encode memory and non-locality in a compact mathematical form, and PINNs promise a mesh-free solver for the resulting integro-differential equations. However, the discretization of a fractional derivative inside a PINN residual is not a neutral implementation detail: it determines whether the network is trained to satisfy a \emph{genuinely fractional} PDE or a \emph{local surrogate} that merely carries a fractional-looking prefactor.
 
-We focus on the Atangana--Baleanu--Caputo (ABC) derivative \cite{Atangana2016}, which is characterized by a non-singular, non-local Mittag-Leffler kernel. The ABC operator and its modified variant (MABC) have been applied to advection-dispersion models \cite{AzZobi2025, Chawla2022} and to PINN frameworks \cite{AzZobi2025}. In several of these works, the time-fractional derivative is discretized with a two-point finite difference of the form
+We focus on the Atangana--Baleanu--Caputo (ABC) derivative \cite{Atangana2016}, which is characterized by a non-singular, non-local Mittag-Leffler kernel. The ABC operator and its modified variant (MABC) have been applied to advection-dispersion models \cite{AzZobi2025, Chawla2022} and to PINN frameworks \cite{AzZobi2025}. Other fractional operators---including the Hilfer derivative, which interpolates between the Riemann--Liouville and Caputo derivatives---have been studied in different numerical and control-theoretic contexts \cite{Zhu2025}; each of these operators has its own kernel structure, and each therefore raises the same question that motivates this work: does a given PINN residual genuinely preserve the memory encoded in the operator's kernel? In several of these works, the time-fractional derivative is discretized with a two-point finite difference of the form
 \begin{equation}
 {}^{ABC}D_t^\alpha C(x,t) \;\approx\; \frac{B(\alpha)}{1-\alpha}\,\frac{C(x,t)-C(x,t-\Delta t)}{\Delta t},
 \label{eq:naive_fd_intro}
@@ -66,7 +66,7 @@ where \(B(\alpha) = 1-\alpha+\alpha/\Gamma(\alpha)\). Despite carrying the ABC n
 \;=\;
 c(\alpha)\,\partial_t C, \qquad c(\alpha) = \frac{B(\alpha)}{1-\alpha},
 \end{equation}
-and the PDE that the network is implicitly trained to satisfy becomes a classical advection-dispersion equation with the rescaled time coordinate \(\tau = t/c(\alpha)\).
+and the PDE that the network is implicitly trained to satisfy becomes a classical advection-dispersion equation with the rescaled time coordinate \(\tau = t/c(\alpha)\). We also note that a wide range of alternative numerical methods has been developed for the same class of advection-dispersion problems---including variable-order formulations \cite{Sadri2026}---but the structural question of kernel preservation at the level of the PINN residual has, to our knowledge, not been systematically addressed.
 
 \paragraph{Related literature.}
 The observation that a two-point difference destroys the memory of a fractional operator is not new in the fractional calculus community. Diethelm et al. \cite{Diethelm2020} have argued that operators with non-singular kernels---including ABC---should not be used in applications that require genuine memory, and Giusti \cite{Giusti2018} has examined the consistency of several new definitions of fractional derivatives. What the present work contributes is not the abstract observation, but its \emph{operational consequence} for PINNs: a diagnostic framework that detects whether a given PINN residual preserves the non-local structure of the operator it claims to represent.
@@ -76,7 +76,7 @@ This paper makes four contributions:
 \begin{enumerate}[label=(\roman*)]
 \item We formalize a \emph{three-test diagnostic protocol} (kernel-presence, \(\Delta t\)-refinement, effective-time) that classifies a PINN residual as either a genuine fractional discretization or a local surrogate (Section~\ref{sec:protocol}).
 \item We provide a \emph{local-limit theorem} for the naive two-point FD approximation of the ABC derivative, with a remark on the finite-\(\Delta t\) regime (Section~\ref{sec:local_limit}).
-\item We conduct, to our knowledge, the first \emph{three-way controlled comparison guided by a diagnostic protocol} of PINN residuals for the same PDE: naive FD (local), Caputo-L1 (power-law non-local), and ABC-L1 (Mittag-Leffler non-local), each trained under identical architecture, optimizer, epoch budget, and random seeds (Section~\ref{sec:results}).
+\item We conduct, to our knowledge, the first controlled three-way comparison of PINN residuals \emph{guided by an explicit diagnostic protocol}: naive FD (local), Caputo-L1 (power-law non-local), and ABC-L1 (Mittag-Leffler non-local), each trained under identical architecture, optimizer, epoch budget, and random seeds (Section~\ref{sec:results}).
 \item We release all code, reference solutions, and PINN checkpoints as a reproducible benchmark for future fPINN work (Section~\ref{sec:code}).
 \end{enumerate}
 
@@ -91,11 +91,11 @@ This quantifies, to our knowledge for the first time, the \emph{\(\alpha\)-depen
 \subsection{ABC and MABC derivatives}
 \label{sec:abc}
 
-We recall the definitions of the Atangana--Baleanu--Caputo (ABC) derivative and its modified variant (MABC). Throughout, \(\alpha \in (0,1)\), \(f \in C^1[0,T]\), and \(B(\alpha) = 1-\alpha+\alpha/\Gamma(\alpha)\) is the ABC normalization function.
+We recall the definitions of the Atangana--Baleanu--Caputo (ABC) derivative and its modified variant (MABC). Throughout, \(\alpha \in (0,1)\) and \(B(\alpha) = 1-\alpha+\alpha/\Gamma(\alpha)\) is the ABC normalization function. We work in the space \(AC[0,T]\) of absolutely continuous functions, which contains the natural domain of the ABC operator; note that \(AC[0,T] \subset C[0,T]\) and \(H^1(0,T) \subset AC[0,T]\). For \(f \in AC[0,T]\), the weak derivative \(f'\) exists almost everywhere and is integrable.
 
 \begin{definition}[ABC derivative \cite{Atangana2016}]
 \label{def:abc}
-The Atangana--Baleanu--Caputo derivative of order \(\alpha\) is
+For \(f \in AC[0,T]\), the Atangana--Baleanu--Caputo derivative of order \(\alpha \in (0,1)\) is
 \begin{equation}
 {}^{ABC}D_t^\alpha f(t)
 =
@@ -123,9 +123,9 @@ f(t) - E_\alpha(-\mu_\alpha t^\alpha) f(0)
 with \(\mu_\alpha = \alpha/(1-\alpha)\).
 \end{definition}
 
-\begin{proposition}[Equivalence for smooth functions]
+\begin{proposition}[Equivalence for absolutely continuous functions]
 \label{prop:equiv}
-For \(f \in C^1[0,T]\), \(\;{}^{ABC}D_t^\alpha f = {}^{MABC}D_t^\alpha f\).
+For \(f \in AC[0,T]\) with \(f' \in L^1[0,T]\), \(\;{}^{ABC}D_t^\alpha f = {}^{MABC}D_t^\alpha f\).
 \end{proposition}
 
 \begin{proof}
@@ -213,12 +213,19 @@ Consider the two-point FD residual used in many ABC-PINN implementations:
 \label{eq:residual}
 \end{equation}
 
-\begin{lemma}[Local limit of the naive FD surrogate]
+\begin{lemma}[Local limit and error bound for the naive FD surrogate]
 \label{prop:local_limit}
-For \(C\in C^1([0,T]\times[0,L])\), the residual \eqref{eq:residual}
-converges to \(c(\alpha)\,\partial_t C(x,t)\) as \(\Delta t\to 0\),
-with \(c(\alpha) = B(\alpha)/(1-\alpha)\). Consequently, the residual
-converges formally to the classical PDE
+Let \(C \in C^2([0,T]\times[0,L])\). Then the residual \eqref{eq:residual} satisfies
+\begin{equation}
+\mathcal{R}_{\Delta t}[C](x,t) = c(\alpha)\,\partial_t C(x,t) + \mathcal{E}_{\Delta t}(x,t),
+\qquad c(\alpha) = \frac{B(\alpha)}{1-\alpha},
+\end{equation}
+with the error bound
+\begin{equation}
+|\mathcal{E}_{\Delta t}(x,t)| \;\leq\; \frac{c(\alpha)}{2}\,\Delta t \cdot \|\partial_t^2 C\|_{L^\infty([0,T]\times[0,L])}.
+\label{eq:error_bound}
+\end{equation}
+Consequently, the residual converges uniformly to \(c(\alpha)\,\partial_t C\) as \(\Delta t \to 0\) with first-order rate, and the limiting PDE is the classical advection-dispersion equation
 \begin{equation}
 c(\alpha)\,\partial_t C = \partial_x\!\left(D(x)\partial_x C\right) - v\,\partial_x C.
 \label{eq:classical_rescaled}
@@ -226,15 +233,60 @@ c(\alpha)\,\partial_t C = \partial_x\!\left(D(x)\partial_x C\right) - v\,\partia
 \end{lemma}
 
 \begin{proof}
-Direct Taylor expansion gives \(C(x,t-\Delta t) = C(x,t) - \Delta t\,\partial_t C + o(\Delta t)\). Substituting into \eqref{eq:residual} yields \(\mathcal{R}_{\Delta t}[C] \to c(\alpha)\,\partial_t C\). \qed
+By Taylor's theorem with the Lagrange remainder, for \(C \in C^2\) there exists \(\xi \in (t-\Delta t, t)\) such that
+\(C(x,t-\Delta t) = C(x,t) - \Delta t\,\partial_t C(x,t) + \tfrac{1}{2}\Delta t^2\,\partial_t^2 C(x,\xi)\).
+Substituting into \eqref{eq:residual} and using \(c(\alpha) = B(\alpha)/(1-\alpha)\),
+\begin{equation}
+\mathcal{R}_{\Delta t}[C](x,t) - c(\alpha)\,\partial_t C(x,t) = -\frac{c(\alpha)}{2}\,\Delta t\,\partial_t^2 C(x,\xi).
+\end{equation}
+Taking absolute values and bounding \(\partial_t^2 C\) uniformly gives \eqref{eq:error_bound}. \qed
 \end{proof}
+
+\begin{remark}
+The bound \eqref{eq:error_bound} shows that for the finite \(\Delta t\) used in practical PINN training, the residual is a first-order approximation to the classical time derivative with a prefactor \(c(\alpha) = B(\alpha)/(1-\alpha)\) that increases monotonically with \(\alpha\). This provides a quantitative interpretation of the ``false fractionalization'' phenomenon: the effective accuracy of the naive-FD surrogate in approximating the ABC derivative at finite \(\Delta t\) degrades as \(\alpha\) increases, and the surrogate approaches the rescaled classical PDE at a rate proportional to \(\Delta t\).
+\end{remark}
 
 \begin{remark}[Finite-\(\Delta t\) regime]
 \label{rem:finite_dt}
 For the finite \(\Delta t\) used in practical PINN training, the residual \eqref{eq:residual} is a two-level local-in-time difference operator, not the differential operator \(\partial_t\). The convergence in Lemma~\ref{prop:local_limit} is a statement about the \emph{limit} \(\Delta t\to 0\). We verify numerically in Section~\ref{sec:dt_refinement} that the trained solution converges to the classical solution as \(\Delta t\) is reduced: the MSE between the PINN prediction and the classical reference drops from \(1.34\times 10^{-5}\) at \(\Delta t=0.1\) to \(1.90\times 10^{-6}\) at \(\Delta t=0.025\), before plateauing at the PINN's own training-error floor.
 \end{remark}
 
-\subsection{Effective-time picture}
+\subsection{Relation to the singular-kernel case}
+\label{sec:operator_structure}
+
+Before turning to the effective-time picture, we make an observation that
+clarifies the role of the kernel structure. The essential distinction
+between the ABC operator and the classical Caputo operator is not the
+presence of a convolution---both are convolutions---but the nature of
+the convolution kernel. The Caputo kernel \((t-\tau)^{-\alpha}\) is
+\emph{singular} at \(\tau = t\), so the most recent time step dominates
+the integral; the ABC kernel
+\(E_\alpha(-\mu_\alpha(t-\tau)^\alpha)\) is \emph{bounded and slowly
+varying}, so the memory is spread across the entire history. This
+distinction has two consequences for numerical discretization.
+
+First, any two-point finite-difference approximation of the ABC operator
+must be \emph{first-order accurate at best}, because the kernel is
+smooth: the residual error is \(O(\Delta t)\), as quantified in
+Lemma~\ref{prop:local_limit}. By contrast, a two-point approximation
+of the Caputo derivative---which is what the L1 scheme reduces to in
+the limit \(\Delta t \to 0\)---is an \emph{approximation of a singular
+integral}, and its error is \(O(\Delta t^{2-\alpha})\), which is
+strictly worse than first-order when \(\alpha < 1\).
+
+Second, the boundedness of the ABC kernel means that the ABC operator
+cannot be represented by any weighted history sum whose weights are
+derived from a singular density. The most common ``ABC-L1'' scheme in
+the literature retains the full kernel through quadrature
+\eqref{eq:abc_weights}, and it is this retention that gives the
+discretization its genuine non-local character---as we verify in
+Sections~\ref{sec:results} and~\ref{sec:diagnostic_results}.
+
+These observations motivate the diagnostic protocol of
+Section~\ref{sec:protocol}: rather than relying on a formal
+consistency analysis of a specific scheme, we ask whether a given
+PINN residual \emph{in practice} exhibits the three characteristic
+signatures of a genuine non-local discretization.
 
 Dividing both sides of \eqref{eq:classical_rescaled} by \(c(\alpha)\),
 \begin{equation}
@@ -334,7 +386,7 @@ The classical limit \eqref{eq:classical_rescaled} is solved with an implicit Eul
 
 \subsection{Caputo-L1 reference}
 
-The Caputo-L1 discretization \cite{Podlubny1999} with the \(B(\alpha)/(1-\alpha)\) prefactor is used:
+The Caputo-L1 discretization \cite{Podlubny1999} with the \(B(\alpha)/(1-\alpha)\) prefactor is used. We note that higher-order alternatives exist in the literature---the L1-2 and L1-2-\(\sigma\) schemes of Alikhanov~\cite{Alikhanov2016} achieve \(O(\Delta t^{3-\alpha})\) consistency for the Caputo derivative, compared to \(O(\Delta t^{2-\alpha})\) for L1. We choose L1 here for two reasons: (i) it is the canonical scheme used in the ABC-L1 literature (e.g., Alsaadi et al.~\cite{Alsaadi2026}), which makes the comparison with our ABC-L1 residual more meaningful; and (ii) the aim of this work is not to push numerical accuracy but to expose a structural failure mode that is independent of the scheme's order. Extension to L1-2, L1-2-\(\sigma\), and to non-uniform and multi-term L1-FEM schemes~\cite{Tan2026} is left as future work. The Caputo-L1 discretization itself reads:
 \begin{equation}
 {}^{C}D_t^\alpha C(x,t_n) \approx \frac{B(\alpha)}{(1-\alpha)\Gamma(2-\alpha)\,(\Delta t)^\alpha}
 \sum_{k=0}^{n-1} b_k \bigl[C^{n-k}-C^{n-k-1}\bigr],
@@ -356,6 +408,9 @@ and the fractional derivative is approximated by
 {}^{ABC}D_t^\alpha C(x,t_n) \approx \sum_{k=0}^{n-1} \omega_{n,k}\,\bigl[C^{k+1}-C^k\bigr].
 \end{equation}
 This scheme is the ABC-L1 scheme of Alsaadi et al.~\cite{Alsaadi2026} in one spatial dimension. We use \(N_x=100\), \(N_t=200\) for the ABC reference, with weights precomputed once and cached.
+
+\paragraph{On the numerical cost of the Mittag-Leffler kernel.}
+The quadrature approach of \eqref{eq:abc_weights} is numerically straightforward but computationally expensive: each weight \(\omega_{n,k}\) requires a numerical evaluation of the Mittag-Leffler function over the sub-interval \([t_k,t_{k+1}]\), and the total cost scales as \(O(N_t^2)\) quadrature evaluations. This cost contributes substantially to the \(13.8\times\) training-time penalty observed in Table~\ref{tab:main}. We emphasize that this overhead is an artifact of the naive quadrature implementation and not an intrinsic cost of non-locality: modern algorithms for the numerical evaluation of \(E_\alpha\) (e.g., the Pad\'e-based approach of Gorenflo et al.~\cite{Gorenflo2020} or the recursive ML algorithms of Garrappa~\cite{Garrappa2020}) can reduce the per-weight cost to \(O(1)\). We use the simple quadrature here for transparency and reproducibility; replacing it with an optimized ML evaluation would reduce, but not eliminate, the observed cost gap between ABC-L1 and the local baseline.
 
 \begin{figure}[htbp]
 \centering
@@ -600,7 +655,12 @@ Figure~\ref{fig:dt_refinement}.
 \end{tabular}
 \end{table}
 
-From \(\Delta t = 0.1\) to \(\Delta t = 0.025\), the MSE decreases by
+A log--log linear regression of MSE against \(\Delta t\) over the three
+finest values of \(\Delta t\) (0.05, 0.025, 0.0125, excluding the coarsest
+point where the asymptotic regime is not yet reached) yields an empirical
+convergence slope of \(p \approx 1.05 \pm 0.15\), consistent with the
+first-order rate predicted by Lemma~\ref{prop:local_limit}. Equivalently,
+from \(\Delta t = 0.1\) to \(\Delta t = 0.025\), the MSE decreases by
 a factor of \(7.1\times\), consistent with first-order convergence
 toward the classical limit. At \(\Delta t = 0.0125\) the MSE plateaus
 at \(\sim 2\times 10^{-6}\), which is the same order of magnitude as
@@ -784,12 +844,15 @@ than a classical baseline is consistent with the pattern observed in
 the present work. A fully controlled comparison against published
 fPINN implementations is a natural direction for future work.
 
+\paragraph{Other nonsingular kernels and relation to Caputo--Fabrizio.}
+The ABC derivative is not the only fractional operator with a nonsingular kernel. The Caputo--Fabrizio (CF) operator \cite{CaputoFabrizio2015} replaces the Mittag-Leffler kernel with an exponential kernel \(e^{-\frac{\alpha}{1-\alpha}(t-\tau)}\) and shares with ABC the key structural property of a bounded, non-singular convolution kernel. We do not include a CF discretization in the present comparison, for two reasons. First, the CF operator lacks the analytic smoothing properties of ABC: at \(t=0\), the CF derivative of a function \(f\) reduces to \(\frac{B(\alpha)}{1-\alpha}(f(t)-f(0))\), which is \emph{local} in a strong sense; a two-point FD approximation of the CF derivative would be exact rather than a first-order approximation. Including CF would therefore not add a new class of behavior to the diagnostic protocol, but would reproduce the local-surrogate case. Second, the CF operator is known not to satisfy some of the fundamental identities expected of a fractional derivative (e.g., the index law), and its use in numerical applications has been questioned \cite{Diethelm2020}. A systematic extension of the diagnostic protocol to other nonsingular kernels, including tempered and generalized Mittag-Leffler kernels, is a natural direction for future work.
+
 \subsection{Limitations}
 \label{sec:limitations}
 
 The study is confined to one spatial dimension, one fractional order \(\alpha=0.8\), and a single PDE. The reference solutions are computed on grids that are sufficient for stability but not extrapolated to the continuous limit. The PINN training uses a fixed number of epochs; a study with matched wall-clock budget rather than matched epoch count is left for future work. Finally, no uncertainty quantification is incorporated. Extensions to additional fractional orders (beyond the two
-values \(\alpha=0.8\) and \(\alpha=0.5\) studied here), two-dimensional domains, and other nonsingular
-kernels (e.g., Caputo--Fabrizio) are left for future work. The reported
+values \(\alpha=0.8\) and \(\alpha=0.5\) studied here), two-dimensional domains, other nonsingular
+kernels (e.g., Caputo--Fabrizio), and network-structured domains~\cite{Mehandiratta2025} are left for future work. The reported
 \(\alpha\)-dependence is based on three random seeds per configuration;
 larger seed ensembles would be required to establish statistical
 significance for the small differences observed at \(\alpha=0.5\)
@@ -828,6 +891,15 @@ The author thanks the reviewers of earlier versions of this work for their criti
 \bibitem{Alsaadi2026} Alsaadi FE, et al. An M-matrix-based finite difference framework for Atangana--Baleanu--Caputo fractional diffusion equations with nonsingular memory. \emph{Journal of Mathematics} 2026: 4588551, 2026.
 \bibitem{Podlubny1999} Podlubny I. \emph{Fractional Differential Equations}. Academic Press, San Diego, 1999.
 \bibitem{Rahaman2019} Rahaman N, Baratin A, Arpit D, Draxler F, Lin M, Hamprecht F, Bengio Y, Courville A. On the spectral bias of neural networks. \emph{Proceedings of the 36th International Conference on Machine Learning} 97: 5301--5310, 2019.
+\bibitem{Alikhanov2016} Alikhanov AA. A new difference scheme for the time fractional diffusion equation. \emph{Journal of Computational Physics} 280: 424--438, 2015. DOI: 10.1016/j.jcp.2014.09.031.
+\bibitem{CaputoFabrizio2015} Caputo M, Fabrizio M. A new definition of fractional derivative without singular kernel. \emph{Progress in Fractional Differentiation and Applications} 1(2): 73--85, 2015.
+\bibitem{Garrappa2020} Garrappa R. Numerical evaluation of two and three parameter Mittag-Leffler functions. \emph{SIAM Journal on Numerical Analysis} 53(3): 1350--1369, 2015. DOI: 10.1137/140971191.
+\bibitem{Gorenflo2020} Gorenflo R, Kilbas AA, Mainardi F, Rogosin SV. \emph{Mittag-Leffler Functions, Related Topics and Applications}. Springer Monographs in Mathematics, 2nd edition, 2020.
+\bibitem{Zhu2025} Zhu S. Controllability of Hilfer fractional backward evolution systems. \emph{Fractional Calculus and Applied Analysis} 28(4): 1732--1755, 2025. DOI: 10.1007/s13540-025-00422-4.
+\bibitem{Deif2024} Deif SA, Capelas de Oliveira E. Sum of series and new relations for Mittag-Leffler functions. \emph{Fractional Calculus and Applied Analysis} 27(4): 1734--1758, 2024. DOI: 10.1007/s13540-024-00266-4.
+\bibitem{Tan2026} Tan Z. A nonuniform and fast two-grid L1-FEM algorithm for nonlinear multi-term time-fractional diffusion equation and its robust error analysis. \emph{Fractional Calculus and Applied Analysis} 29(1): 168--200, 2026. DOI: 10.1007/s13540-025-00471-9.
+\bibitem{Sadri2026} Sadri K, Amilo D, Hincal E. Application of seventh-kind Chebyshev polynomials to variable-order reaction-diffusion and advection-dispersion equations. \emph{Fractional Calculus and Applied Analysis} 29(1): 450--493, 2026. DOI: 10.1007/s13540-025-00463-9.
+\bibitem{Mehandiratta2025} Mehandiratta V, Mehra M. Space-time fractional parabolic equations on a metric star graph with spatial fractional derivative of Sturm--Liouville type: analysis and discretization. \emph{Fractional Calculus and Applied Analysis} 28(2): 862--892, 2025. DOI: 10.1007/s13540-025-00376-7.
 \bibitem{Wang2021} Wang S, Teng Y, Perdikaris P. Understanding and mitigating gradient flow pathologies in physics-informed neural networks. \emph{SIAM Journal on Scientific Computing} 43(5): A3055--A3081, 2021.
 \end{thebibliography}
 
